@@ -1,23 +1,38 @@
-
 export interface Product {
   id: string;
   name: string;
   description: string;
-  image: string;
-  affiliateLink: string;
   price: string;
   category: string;
+  images: string[];
+  affiliateLink: string;
 }
 
 export interface Post {
   id: string;
   title: string;
-  content: string;
-  author: string;
+  excerpt: string;
+  imageUrl: string;
   date: string;
-  category: string;
-  tags: string[];
-  image: string;
+  author: string;
+  content: string;
+}
+
+export interface SEOConfig {
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+}
+
+export interface SiteSettings {
+  seo: {
+    home: SEOConfig;
+    about: SEOConfig;
+    products: SEOConfig;
+    contact: SEOConfig;
+    // Fix: Add blog SEO configuration to the site settings type.
+    blog: SEOConfig;
+  };
 }
 
 export interface SiteContent {
@@ -33,26 +48,15 @@ export interface SiteContent {
   };
 }
 
-export interface SeoSettings {
-  metaTitle: string;
-  metaDescription: string;
-  metaKeywords: string;
-}
-
-export interface SiteSettings {
-  apiKeys: {
-    googleAnalytics: string;
-  },
-  seo: {
-    home: SeoSettings;
-    about: SeoSettings;
-    blog: SeoSettings;
-    products: SeoSettings;
-    contact: SeoSettings;
-  }
-}
-
 export interface SocialLink {
-  name: string;
+  name: 'Facebook' | 'X' | 'Instagram' | 'LinkedIn' | 'YouTube' | 'Pinterest' | 'Whatsapp' | 'Tiktok';
   href: string;
+}
+
+export interface AppContextType {
+  products: Product[];
+  posts: Post[];
+  siteContent: SiteContent;
+  siteSettings: SiteSettings;
+  socialLinks: SocialLink[];
 }

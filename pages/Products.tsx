@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
+import Helmet from '../components/Helmet';
 
 const Products: React.FC = () => {
-  const { products } = useAppContext();
+  const { products, siteSettings } = useAppContext();
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const seo = siteSettings.seo.products;
 
   const categories = useMemo(() => {
     const allCategories = products.map(p => p.category);
@@ -19,42 +21,53 @@ const Products: React.FC = () => {
   }, [products, selectedCategory]);
 
   return (
-    <div className="bg-white py-20">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-dark mb-4">Our Curated Products</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">A selection of our favorite products to enhance your beauty and wellness routine.</p>
-        </div>
+    <>
+      <Helmet 
+        title={seo.metaTitle}
+        description={seo.metaDescription}
+        keywords={seo.metaKeywords}
+      />
+      <div className="bg-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-dark mb-4">Our Curated Products</h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">A selection of our favorite products to enhance your beauty and wellness routine.</p>
+          </div>
 
-        <div className="flex justify-center flex-wrap gap-3 mb-12">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ease-in-out ${
-                selectedCategory === category
-                  ? 'bg-brand-primary text-white shadow-md'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+          <div className="mb-12 flex justify-center">
+            <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="appearance-none w-64 bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-full leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                aria-label="Filter products by category"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </div>
+            </div>
+          </div>
+          
+          {filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-xl text-gray-500">No products found in this category.</p>
+            </div>
+          )}
         </div>
-        
-        {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <p className="text-xl text-gray-500">No products found in this category.</p>
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 

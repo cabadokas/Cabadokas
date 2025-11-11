@@ -21,7 +21,6 @@ const checkAiOrThrow = (keyOverride?: string) => {
   return ai;
 };
 
-// Fix: Add generateContent function for basic text generation.
 export const generateContent = async (prompt: string): Promise<string> => {
     const ai = checkAiOrThrow();
     const response = await ai.models.generateContent({

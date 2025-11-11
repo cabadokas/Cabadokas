@@ -8,7 +8,7 @@ import { fileToBase64 } from '../../utils/helpers';
 import type { Part } from '@google/genai';
 
 const ImageStudio: React.FC = () => {
-    // Fix: Corrected syntax error (removed extra '=')
+    // Fix: Corrected a syntax error in the useState initialization for 'activeTab'.
     const [activeTab, setActiveTab] = useState<'generate' | 'edit'>('generate');
     const [prompt, setPrompt] = useState('');
     const [aspectRatio, setAspectRatio] = useState('1:1');

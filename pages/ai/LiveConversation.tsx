@@ -9,7 +9,7 @@ type Transcription = { speaker: 'user' | 'bot'; text: string };
 
 const LiveConversation: React.FC = () => {
     const [isListening, setIsListening] = useState(false);
-    // Fix: Corrected syntax error (removed extra '=')
+    // Fix: Corrected a syntax error in the useState initialization for 'error'.
     const [error, setError] = useState('');
     const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
     const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
