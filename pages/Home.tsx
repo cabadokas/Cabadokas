@@ -22,7 +22,7 @@ const Home: React.FC = () => {
       <div className="bg-brand-light">
         {/* Hero Section */}
         <section className="relative bg-brand-secondary py-20 md:py-32 text-center text-brand-dark">
-           <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: "url('https://images.unsplash.com/photo-1590500593252-3a32f0571343?q=80&w=2070&auto=format&fit=crop')"}}></div>
+           <div className="absolute inset-0 bg-cover bg-center opacity-50" style={{backgroundImage: "url('https://images.pexels.com/photos/458766/pexels-photo-458766.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')"}}></div>
           <div className="container mx-auto px-6 relative">
             <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">{siteContent.home.heroTitle}</h1>
             <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">{siteContent.home.heroSubtitle}</p>
@@ -68,7 +68,7 @@ const Home: React.FC = () => {
             </div>
              <div className="text-center mt-12">
               <a href={BLOGGER_LINK} target="_blank" rel="noopener noreferrer" className="bg-brand-dark text-white px-6 py-3 rounded-md font-semibold hover:bg-brand-primary transition-colors">
-                Read More on My Blog
+                Read More on Blog
               </a>
             </div>
           </div>

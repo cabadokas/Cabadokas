@@ -39,7 +39,7 @@ const About: React.FC = () => {
           </div>
           
           <div className="mt-20 text-center">
-              <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=2087&auto=format&fit=crop" alt="Woman applying makeup, representing the Cabadokas brand" className="rounded-lg shadow-xl mx-auto" />
+              <img src="https://images.pexels.com/photos/3993212/pexels-photo-3993212.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Woman applying makeup, representing the Cabadokas brand" className="rounded-lg shadow-xl mx-auto max-w-full h-auto" />
           </div>
         </div>
       </div>

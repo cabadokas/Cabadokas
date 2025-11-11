@@ -8,6 +8,11 @@ export interface Product {
   affiliateLink: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -15,8 +20,10 @@ export interface Post {
   imageUrl: string;
   date: string;
   author: string;
-  content: string;
+  categoryId: string;
+  tags: string[];
 }
+
 
 export interface SEOConfig {
   metaTitle: string;
@@ -26,12 +33,11 @@ export interface SEOConfig {
 
 export interface SiteSettings {
   seo: {
+    [key: string]: SEOConfig;
     home: SEOConfig;
     about: SEOConfig;
     products: SEOConfig;
     contact: SEOConfig;
-    // Fix: Add blog SEO configuration to the site settings type.
-    blog: SEOConfig;
   };
 }
 
@@ -48,15 +54,24 @@ export interface SiteContent {
   };
 }
 
+export type SocialLinkName = 'Facebook' | 'X' | 'Instagram' | 'Pinterest' | 'Whatsapp' | 'Tiktok'
+
 export interface SocialLink {
-  name: 'Facebook' | 'X' | 'Instagram' | 'LinkedIn' | 'YouTube' | 'Pinterest' | 'Whatsapp' | 'Tiktok';
+  name: SocialLinkName;
   href: string;
 }
 
 export interface AppContextType {
   products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+  categories: Category[];
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
   siteContent: SiteContent;
+  setSiteContent: React.Dispatch<React.SetStateAction<SiteContent>>;
   siteSettings: SiteSettings;
+  setSiteSettings: React.Dispatch<React.SetStateAction<SiteSettings>>;
   socialLinks: SocialLink[];
+  setSocialLinks: React.Dispatch<React.SetStateAction<SocialLink[]>>;
 }
