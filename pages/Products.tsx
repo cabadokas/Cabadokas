@@ -2,10 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import Helmet from '../components/Helmet';
+import { Search } from 'lucide-react';
 
 const Products: React.FC = () => {
   const { products, siteSettings } = useAppContext();
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const seo = siteSettings.seo.products;
 
   const categories = useMemo(() => {
@@ -14,11 +16,24 @@ const Products: React.FC = () => {
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'All') {
-      return products;
+    let tempProducts = products;
+
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      tempProducts = tempProducts.filter(p => p.category === selectedCategory);
     }
-    return products.filter(p => p.category === selectedCategory);
-  }, [products, selectedCategory]);
+
+    // Filter by search query
+    if (searchQuery.trim() !== '') {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      tempProducts = tempProducts.filter(p =>
+        p.name.toLowerCase().includes(lowercasedQuery) ||
+        p.description.toLowerCase().includes(lowercasedQuery)
+      );
+    }
+    
+    return tempProducts;
+  }, [products, selectedCategory, searchQuery]);
 
   return (
     <>
@@ -34,7 +49,21 @@ const Products: React.FC = () => {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">A selection of our favorite products to enhance your beauty and wellness routine.</p>
           </div>
 
-          <div className="mb-12 flex justify-center">
+          <div className="mb-12 flex flex-col md:flex-row justify-center items-center gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className="w-64 bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pl-10 rounded-full leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                aria-label="Search products"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-700">
+                <Search size={20} />
+              </div>
+            </div>
+
             <div className="relative">
               <select
                 value={selectedCategory}
@@ -62,7 +91,7 @@ const Products: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-xl text-gray-500">No products found in this category.</p>
+              <p className="text-xl text-gray-500">No products found matching your criteria.</p>
             </div>
           )}
         </div>
