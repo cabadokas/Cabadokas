@@ -1,17 +1,23 @@
 
+
 import React, { useState, useRef } from 'react';
 import AIPageLayout from '../../components/ai/AIPageLayout';
 import LoadingSpinner from '../../components/ai/LoadingSpinner';
-import { Volume2, Play } from 'lucide-react';
+import { Volume2 } from 'lucide-react';
 import { generateSpeech } from '../../services/geminiService';
 import { decode, decodeAudioData } from '../../utils/audio';
+
+const VOICE_OPTIONS = ['Kore', 'Puck', 'Charon', 'Fenrir', 'Zephyr'];
 
 const TextToSpeech: React.FC = () => {
     const [text, setText] = useState('Hello! I am an AI voice from Gemini. Have a wonderful day!');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const audioRef = useRef<HTMLAudioElement>(null);
-    const [audioB64, setAudioB64] = useState<string | null>(null);
+
+    const [voice, setVoice] = useState('Kore');
+    const [speakingRate, setSpeakingRate] = useState(1.0);
+    const [pitch, setPitch] = useState(0.0);
 
     const handleGenerateSpeech = async () => {
         if (!text.trim()) {
@@ -20,16 +26,14 @@ const TextToSpeech: React.FC = () => {
         }
         setLoading(true);
         setError('');
-        setAudioB64(null);
 
         try {
-            const resultB64 = await generateSpeech(text);
+            const resultB64 = await generateSpeech(text, { voice, speakingRate, pitch });
             if (!resultB64) throw new Error("API did not return audio data.");
             
             const audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
             const audioBuffer = await decodeAudioData(decode(resultB64), audioContext, 24000, 1);
             
-            // A bit of a hack to play raw PCM data in an <audio> tag
             const wav = audioBufferToWav(audioBuffer);
             const blob = new Blob([wav], { type: 'audio/wav' });
             const url = URL.createObjectURL(blob);
@@ -45,7 +49,6 @@ const TextToSpeech: React.FC = () => {
         }
     };
     
-    // Helper to convert AudioBuffer to a WAV file Blob
     function audioBufferToWav(buffer: AudioBuffer) {
         let numOfChan = buffer.numberOfChannels,
             length = buffer.length * numOfChan * 2 + 44,
@@ -55,32 +58,30 @@ const TextToSpeech: React.FC = () => {
             offset = 0,
             pos = 0;
 
-        // write WAV header
-        setUint32(0x46464952); // "RIFF"
-        setUint32(length - 8); // file length - 8
-        setUint32(0x45564157); // "WAVE"
+        setUint32(0x46464952); 
+        setUint32(length - 8);
+        setUint32(0x45564157);
 
-        setUint32(0x20746d66); // "fmt " chunk
-        setUint32(16); // length = 16
-        setUint16(1); // PCM (uncompressed)
+        setUint32(0x20746d66);
+        setUint32(16);
+        setUint16(1);
         setUint16(numOfChan);
         setUint32(buffer.sampleRate);
-        setUint32(buffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
-        setUint16(numOfChan * 2); // block-align
-        setUint16(16); // 16-bit
+        setUint32(buffer.sampleRate * 2 * numOfChan);
+        setUint16(numOfChan * 2);
+        setUint16(16);
 
-        setUint32(0x61746164); // "data" - chunk
-        setUint32(length - pos - 4); // chunk length
+        setUint32(0x61746164);
+        setUint32(length - pos - 4);
 
-        // write interleaved data
         for(i = 0; i < buffer.numberOfChannels; i++)
             channels.push(buffer.getChannelData(i));
 
         while(pos < length) {
             for(i = 0; i < numOfChan; i++) {
-                sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
-                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
-                view.setInt16(pos, sample, true); // write 16-bit sample
+                sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                view.setInt16(pos, sample, true);
                 pos += 2;
             }
             offset++
@@ -95,6 +96,26 @@ const TextToSpeech: React.FC = () => {
     return (
         <AIPageLayout title="Text to Speech" description="Convert written text into natural-sounding speech with Gemini.">
             <div className="space-y-4">
+                <div className="p-4 border rounded-lg bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-3 text-brand-dark">Voice Configuration</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label htmlFor="voice" className="block text-sm font-medium text-gray-700">Voice</label>
+                            <select id="voice" value={voice} onChange={(e) => setVoice(e.target.value)} className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                {VOICE_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+                            </select>
+                        </div>
+                        <div className="md:col-span-1">
+                            <label htmlFor="speed" className="block text-sm font-medium text-gray-700">Speed ({speakingRate.toFixed(1)}x)</label>
+                            <input type="range" id="speed" min="0.5" max="2" step="0.1" value={speakingRate} onChange={(e) => setSpeakingRate(parseFloat(e.target.value))} className="w-full mt-2 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
+                        </div>
+                        <div className="md:col-span-1">
+                            <label htmlFor="pitch" className="block text-sm font-medium text-gray-700">Pitch ({pitch.toFixed(1)})</label>
+                            <input type="range" id="pitch" min="-10" max="10" step="0.5" value={pitch} onChange={(e) => setPitch(parseFloat(e.target.value))} className="w-full mt-2 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <label htmlFor="tts-text" className="block text-sm font-medium text-gray-700">Text to Synthesize</label>
                     <textarea

@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, GenerateContentResponse, Chat, Modality, Part, Operation, GenerateVideosResponse, LiveSession } from "@google/genai";
 
 const API_KEY = process.env.API_KEY;
@@ -152,16 +153,28 @@ export const analyzeImage = async (prompt: string, image: Part) => {
     return response.text;
 };
 
-export const generateSpeech = async (text: string) => {
+interface SpeechConfigOptions {
+    voice: string;
+    speakingRate: number;
+    pitch: number;
+}
+
+export const generateSpeech = async (text: string, options: SpeechConfigOptions) => {
     const ai = checkAiOrThrow();
+
+    // The SDK types might not include pitch/speakingRate, so use 'any' to be safe.
+    const speechConfig: any = {
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: options.voice } },
+        speakingRate: options.speakingRate,
+        pitch: options.pitch,
+    };
+    
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
         contents: [{ parts: [{ text: `Say this: ${text}` }] }],
         config: {
             responseModalities: [Modality.AUDIO],
-            speechConfig: {
-                voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
-            },
+            speechConfig,
         },
     });
     return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;

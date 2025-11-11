@@ -1,3 +1,6 @@
+// Fix: Add import for React types to resolve 'Cannot find namespace React' error.
+import type { Dispatch, SetStateAction } from 'react';
+
 export interface Product {
   id: string;
   name: string;
@@ -9,7 +12,7 @@ export interface Product {
 }
 
 export interface Category {
-  id: string;
+  id:string;
   name: string;
 }
 
@@ -54,7 +57,22 @@ export interface SiteContent {
   };
 }
 
-export type SocialLinkName = 'Facebook' | 'X' | 'Instagram' | 'Pinterest' | 'Whatsapp' | 'Tiktok'
+export type SocialLinkName = 
+  'Facebook' | 
+  'X' | 
+  'Instagram' | 
+  'Tiktok' | 
+  'Discord' |
+  'Snapchat' |
+  'YouTube' |
+  'Whatsapp' |
+  'Behance' |
+  'Threads' |
+  'LinkedIn' |
+  'Dribbble' |
+  'Pinterest' |
+  'Twitch' |
+  'Telegram';
 
 export interface SocialLink {
   name: SocialLinkName;
@@ -63,15 +81,21 @@ export interface SocialLink {
 
 export interface AppContextType {
   products: Product[];
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  // Fix: Use imported Dispatch and SetStateAction types.
+  setProducts: Dispatch<SetStateAction<Product[]>>;
   posts: Post[];
-  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+  // Fix: Use imported Dispatch and SetStateAction types.
+  setPosts: Dispatch<SetStateAction<Post[]>>;
   categories: Category[];
-  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+  // Fix: Use imported Dispatch and SetStateAction types.
+  setCategories: Dispatch<SetStateAction<Category[]>>;
   siteContent: SiteContent;
-  setSiteContent: React.Dispatch<React.SetStateAction<SiteContent>>;
+  // Fix: Use imported Dispatch and SetStateAction types.
+  setSiteContent: Dispatch<SetStateAction<SiteContent>>;
   siteSettings: SiteSettings;
-  setSiteSettings: React.Dispatch<React.SetStateAction<SiteSettings>>;
+  // Fix: Use imported Dispatch and SetStateAction types.
+  setSiteSettings: Dispatch<SetStateAction<SiteSettings>>;
   socialLinks: SocialLink[];
-  setSocialLinks: React.Dispatch<React.SetStateAction<SocialLink[]>>;
+  // Fix: Use imported Dispatch and SetStateAction types.
+  setSocialLinks: Dispatch<SetStateAction<SocialLink[]>>;
 }

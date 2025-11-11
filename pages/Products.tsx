@@ -10,7 +10,10 @@ const Products: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const seo = siteSettings.seo.products;
 
-  const categories = useMemo(() => {
+  // Fix: Explicitly type the useMemo hook to ensure `categories` is a string array.
+  // This prevents TypeScript from inferring `unknown` for the category variable
+  // during mapping, which caused type errors for the `key`, `value`, and child props.
+  const categories = useMemo<string[]>(() => {
     const allCategories = products.map(p => p.category);
     return ['All', ...Array.from(new Set(allCategories))];
   }, [products]);

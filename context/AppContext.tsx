@@ -46,12 +46,21 @@ const INITIAL_SITE_SETTINGS: SiteSettings = {
 };
 
 const INITIAL_SOCIAL_LINKS: SocialLink[] = [
-    { name: 'Facebook', href: '#' },
-    { name: 'Whatsapp', href: 'https://wa.me/1234567890' },
-    { name: 'Instagram', href: '#' },
-    { name: 'X', href: '#' },
-    { name: 'Pinterest', href: '#' },
-    { name: 'Tiktok', href: '#' },
+    { name: 'Facebook', href: 'https://www.facebook.com/Cabadokas' },
+    { name: 'X', href: 'https://www.x.com/Cabadokas' },
+    { name: 'Instagram', href: 'https://www.instagram.com/Cabadokas' },
+    { name: 'Tiktok', href: 'https://www.tiktok.com/@Cabadokas' },
+    { name: 'Discord', href: 'https://discord.com' }, // Discord links are usually invite-based
+    { name: 'Snapchat', href: 'https://www.snapchat.com/add/Cabadokas' },
+    { name: 'YouTube', href: 'https://www.youtube.com/@Cabadokas' },
+    { name: 'Whatsapp', href: 'https://wa.me/1234567890' }, // Requires a phone number
+    { name: 'Behance', href: 'https://www.behance.net/Cabadokas' },
+    { name: 'Threads', href: 'https://www.threads.net/@Cabadokas' },
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/company/Cabadokas' },
+    { name: 'Dribbble', href: 'https://www.dribbble.com/Cabadokas' },
+    { name: 'Pinterest', href: 'https://www.pinterest.com/Cabadokas' },
+    { name: 'Twitch', href: 'https://www.twitch.tv/Cabadokas' },
+    { name: 'Telegram', href: 'https://t.me/Cabadokas' },
 ];
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -76,7 +85,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-export const useAppContext = () => {
+export const useAppContext = (): AppContextType => {
   const context = useContext(AppContext);
   if (context === undefined) {
     throw new Error('useAppContext must be used within an AppProvider');
