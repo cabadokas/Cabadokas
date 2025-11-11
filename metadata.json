@@ -1,0 +1,9 @@
+{
+  "name": "Cabadokas",
+  "description": "A comprehensive resource website for women, covering topics like makeup, beauty tools, weight loss, cosmetics, and general health, with affiliate marketing and an editable admin dashboard.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
