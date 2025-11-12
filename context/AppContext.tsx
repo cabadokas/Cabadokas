@@ -1,9 +1,10 @@
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import type { AppContextType, Product, Post, SiteContent, SiteSettings, SocialLink, Category } from '../types';
+import { fetchPosts } from '../services/bloggerService';
 
 // Initial Data
 const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: 'Organic Face Serum', description: 'A rejuvenating serum made with all-natural ingredients.', price: '$49.99', category: 'Skincare', images: ['https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg?auto=compress&cs=tinysrgb&w=600', 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
+  { id: '1', name: 'Organic Face Serum', description: 'A rejuvenating serum made with all-natural ingredients.', price: '$49.99', category: 'Skincare', images: ['https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg?auto=compress&cs=tinysrgb&w=600', 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#', videoUrl: 'https://www.youtube.com/embed/fD3-v3a0dDU' },
   { id: '2', name: 'Silk Sleep Mask', description: 'Block out light for a deeper, more restful sleep.', price: '$24.99', category: 'Wellness', images: ['https://images.pexels.com/photos/7936413/pexels-photo-7936413.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
   { id: '3', name: 'Herbal Detox Tea', description: 'A blend of herbs to cleanse and revitalize your body.', price: '$19.99', category: 'Health', images: ['https://images.pexels.com/photos/4113943/pexels-photo-4113943.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
   { id: '4', name: 'Aromatherapy Diffuser', description: 'Create a calming atmosphere with your favorite essential oils.', price: '$39.99', category: 'Home', images: ['https://images.pexels.com/photos/4203063/pexels-photo-4203063.jpeg?auto=compress&cs=tinysrgb&w=600', 'https://images.pexels.com/photos/4476644/pexels-photo-4476644.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
@@ -15,12 +16,7 @@ const INITIAL_CATEGORIES: Category[] = [
     { id: 'cat1', name: 'Skincare' },
     { id: 'cat2', name: 'Wellness' },
     { id: 'cat3', name: 'Nutrition' },
-];
-
-const INITIAL_POSTS: Post[] = [
-    { id: '1', title: 'The Ultimate Guide to a Morning Skincare Routine', excerpt: 'Discover the steps to a perfect morning skincare routine that will leave your skin glowing all day long.', imageUrl: 'https://images.pexels.com/photos/4041391/pexels-photo-4041391.jpeg?auto=compress&cs=tinysrgb&w=600', date: 'October 26, 2023', author: 'Jane Doe', categoryId: 'cat1', tags: ['Glow', 'Morning Routine'] },
-    { id: '2', title: '5 Natural Ways to Boost Your Energy Levels', excerpt: 'Feeling sluggish? These five natural tips will help you boost your energy without the caffeine crash.', imageUrl: 'https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', date: 'October 22, 2023', author: 'John Smith', categoryId: 'cat2', tags: ['Energy', 'Fitness'] },
-    { id: '3', title: 'Mindfulness and Meditation for Beginners', excerpt: 'Learn the basics of mindfulness and meditation to reduce stress and improve your overall well-being.', imageUrl: 'https://images.pexels.com/photos/3862601/pexels-photo-3862601.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', date: 'October 18, 2023', author: 'Jane Doe', categoryId: 'cat2', tags: ['Stress Relief', 'Meditation'] },
+    { id: 'General', name: 'General' },
 ];
 
 const INITIAL_SITE_CONTENT: SiteContent = {
@@ -42,6 +38,7 @@ const INITIAL_SITE_SETTINGS: SiteSettings = {
         about: { metaTitle: 'About Us | Cabadokas', metaDescription: 'Learn about the mission and vision of Cabadokas.', metaKeywords: 'about us, mission, vision, wellness blog' },
         products: { metaTitle: 'Products | Cabadokas', metaDescription: 'A selection of our favorite products to enhance your beauty and wellness routine.', metaKeywords: 'products, skincare, health supplements, wellness items' },
         contact: { metaTitle: 'Contact Us | Cabadokas', metaDescription: "Get in touch with the Cabadokas team.", metaKeywords: 'contact, support, inquiry' },
+        blog: { metaTitle: 'Blog | Cabadokas', metaDescription: "Read our latest articles on beauty, wellness, and more.", metaKeywords: 'blog, articles, beauty tips, wellness advice' },
     }
 };
 
@@ -67,15 +64,33 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [postsLoading, setPostsLoading] = useState(true);
   const [categories, setCategories] = useState(INITIAL_CATEGORIES);
   const [siteContent, setSiteContent] = useState(INITIAL_SITE_CONTENT);
   const [siteSettings, setSiteSettings] = useState(INITIAL_SITE_SETTINGS);
   const [socialLinks, setSocialLinks] = useState(INITIAL_SOCIAL_LINKS);
 
+  useEffect(() => {
+    const loadPosts = async () => {
+        setPostsLoading(true);
+        try {
+            const bloggerPosts = await fetchPosts();
+            setPosts(bloggerPosts);
+        } catch (error) {
+            console.error("Failed to load posts from Blogger:", error);
+        } finally {
+            setPostsLoading(false);
+        }
+    };
+    loadPosts();
+  }, []);
+
+
   const value: AppContextType = {
     products, setProducts,
     posts, setPosts,
+    postsLoading,
     categories, setCategories,
     siteContent, setSiteContent,
     siteSettings, setSiteSettings,

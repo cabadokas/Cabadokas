@@ -8,6 +8,7 @@ import Products from './pages/Products';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
 import ScrollToTop from './components/ScrollToTop';
+import Blog from './pages/Blog';
 
 // AI Studio Pages
 import AIStudio from './pages/ai/AIStudio';
@@ -31,6 +32,7 @@ function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/blog" element={<Blog />} />
             
             {/* AI Studio Routes */}
             <Route path="/studio" element={<AIStudio />} />

@@ -5,9 +5,10 @@ import PostCard from '../components/PostCard';
 import { Link } from 'react-router-dom';
 import Helmet from '../components/Helmet';
 import { BLOGGER_LINK } from '../constants';
+import LoadingSpinner from '../components/ai/LoadingSpinner';
 
 const Home: React.FC = () => {
-  const { products, posts, siteContent, siteSettings } = useAppContext();
+  const { products, posts, postsLoading, siteContent, siteSettings } = useAppContext();
   const featuredProducts = products.slice(0, 4);
   const latestArticles = posts.slice(0, 3);
   const seo = siteSettings.seo.home;
@@ -61,11 +62,17 @@ const Home: React.FC = () => {
         <section className="py-20">
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-serif font-semibold text-center mb-12">Latest Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {latestArticles.map(post => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
+            {postsLoading ? (
+              <div className="flex justify-center"><LoadingSpinner text="Loading Articles..." /></div>
+            ) : latestArticles.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {latestArticles.map(post => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500">Could not load articles. Please check our blog directly.</p>
+            )}
              <div className="text-center mt-12">
               <a href={BLOGGER_LINK} target="_blank" rel="noopener noreferrer" className="bg-brand-dark text-white px-6 py-3 rounded-md font-semibold hover:bg-brand-primary transition-colors">
                 Read More on Blog

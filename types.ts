@@ -9,6 +9,7 @@ export interface Product {
   category: string;
   images: string[];
   affiliateLink: string;
+  videoUrl?: string;
 }
 
 export interface Category {
@@ -25,6 +26,7 @@ export interface Post {
   author: string;
   categoryId: string;
   tags: string[];
+  url: string;
 }
 
 
@@ -41,6 +43,7 @@ export interface SiteSettings {
     about: SEOConfig;
     products: SEOConfig;
     contact: SEOConfig;
+    blog: SEOConfig;
   };
 }
 
@@ -86,6 +89,7 @@ export interface AppContextType {
   posts: Post[];
   // Fix: Use imported Dispatch and SetStateAction types.
   setPosts: Dispatch<SetStateAction<Post[]>>;
+  postsLoading: boolean;
   categories: Category[];
   // Fix: Use imported Dispatch and SetStateAction types.
   setCategories: Dispatch<SetStateAction<Category[]>>;

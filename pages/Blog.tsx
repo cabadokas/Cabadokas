@@ -2,9 +2,10 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import PostCard from '../components/PostCard';
 import Helmet from '../components/Helmet';
+import LoadingSpinner from '../components/ai/LoadingSpinner';
 
 const Blog: React.FC = () => {
-  const { posts, siteSettings } = useAppContext();
+  const { posts, postsLoading, siteSettings } = useAppContext();
   const seo = siteSettings.seo.blog;
 
   return (
@@ -21,11 +22,21 @@ const Blog: React.FC = () => {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">Insights, tips, and stories on beauty, wellness, and more.</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map(post => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          {postsLoading ? (
+            <div className="flex justify-center">
+              <LoadingSpinner text="Loading Articles..." />
+            </div>
+          ) : posts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map(post => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-xl text-gray-500">No articles found.</p>
+            </div>
+          )}
         </div>
       </div>
     </>

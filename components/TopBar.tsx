@@ -13,7 +13,7 @@ const TopBar = () => {
           <NavLink to="/" className={({ isActive }) => `px-3 py-1 transition-colors ${isActive ? 'text-brand-primary font-semibold' : 'hover:text-brand-primary'}`}>Home</NavLink>
           <NavLink to="/about" className={({ isActive }) => `px-3 py-1 transition-colors ${isActive ? 'text-brand-primary font-semibold' : 'hover:text-brand-primary'}`}>About</NavLink>
           <NavLink to="/products" className={({ isActive }) => `px-3 py-1 transition-colors ${isActive ? 'text-brand-primary font-semibold' : 'hover:text-brand-primary'}`}>Products</NavLink>
-          <a href="https://cabadokas.blogspot.com/" target="_blank" rel="noopener noreferrer" className="px-3 py-1 hover:text-brand-primary transition-colors">Blog</a>
+          <NavLink to="/blog" className={({ isActive }) => `px-3 py-1 transition-colors ${isActive ? 'text-brand-primary font-semibold' : 'hover:text-brand-primary'}`}>Blog</NavLink>
           <NavLink to="/contact" className={({ isActive }) => `px-3 py-1 transition-colors ${isActive ? 'text-brand-primary font-semibold' : 'hover:text-brand-primary'}`}>Contact</NavLink>
           <NavLink to="/studio" className={({ isActive }) => `px-3 py-1 transition-colors ${isActive ? 'text-brand-primary font-semibold' : 'hover:text-brand-primary'}`}>✨ AI Studio</NavLink>
           

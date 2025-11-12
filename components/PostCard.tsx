@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Post } from '../types';
 import { ArrowRight } from 'lucide-react';
-import { BLOGGER_LINK } from '../constants';
 import { useAppContext } from '../context/AppContext';
 
 interface PostCardProps {
@@ -10,7 +9,8 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { categories } = useAppContext();
-  const category = categories.find(c => c.id === post.categoryId);
+  // Match by name since categoryId from Blogger is a string label
+  const category = categories.find(c => c.name.toLowerCase() === post.categoryId.toLowerCase());
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 group flex flex-col">
@@ -31,7 +31,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </span>
           ))}
         </div>
-        <a href={BLOGGER_LINK} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-primary hover:text-brand-accent transition-colors flex items-center mt-auto">
+        <a href={post.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-primary hover:text-brand-accent transition-colors flex items-center mt-auto">
           Read More <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
         </a>
       </div>
