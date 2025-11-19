@@ -1,14 +1,26 @@
+
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../types';
 import { ChevronLeft, ChevronRight, Image as ImageIcon, Video, X } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { addToCart } = useAppContext();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  
+  const [selectedVariationId, setSelectedVariationId] = useState<string | null>(
+    product.variations && product.variations.length > 0 ? product.variations[0].id : null
+  );
+
+  const selectedVariation = product.variations?.find(v => v.id === selectedVariationId);
+  const currentPrice = selectedVariation ? selectedVariation.price : product.price;
+  // const currentLink = selectedVariation?.affiliateLink || product.affiliateLink; // Not using external link for "Add to Cart" flow
 
   useEffect(() => {
     const body = document.body;
@@ -47,6 +59,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setIsVideoModalOpen(true);
   };
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product, selectedVariationId || undefined);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+
   const PlaceholderImage = () => (
     <div className="w-full h-56 bg-gray-200 flex items-center justify-center">
         <ImageIcon className="text-gray-400" size={48} />
@@ -55,7 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 group">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 group h-full flex flex-col">
         <div className="relative">
           {hasImages ? (
               <img src={product.images[currentImageIndex]} alt={`${product.name} - image ${currentImageIndex + 1}`} className="w-full h-56 object-cover" />
@@ -104,19 +123,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           <div className="absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold px-2 py-1 rounded-full z-10">{product.category}</div>
         </div>
-        <div className="p-6 flex flex-col h-full">
+        <div className="p-6 flex flex-col flex-grow">
           <h3 className="text-xl font-serif font-semibold text-brand-dark mb-2">{product.name}</h3>
           <p className="text-gray-600 text-sm mb-4 flex-grow">{product.description}</p>
-          <div className="flex justify-between items-center mt-auto">
-            <span className="text-lg font-bold text-brand-accent">{product.price}</span>
-            <a
-              href={product.affiliateLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-dark text-white px-4 py-2 rounded-md hover:bg-brand-primary transition-colors text-sm font-semibold"
+          
+          {product.variations && product.variations.length > 0 && (
+             <div className="mb-4">
+                <div className="flex flex-wrap gap-2">
+                    {product.variations.map(variation => (
+                        <button
+                            key={variation.id}
+                            onClick={() => setSelectedVariationId(variation.id)}
+                            className={`px-3 py-1 text-xs font-semibold rounded-full border transition-colors ${
+                                selectedVariationId === variation.id
+                                    ? 'bg-brand-primary text-white border-brand-primary'
+                                    : 'bg-white text-gray-600 border-gray-300 hover:border-brand-primary'
+                            }`}
+                        >
+                            {variation.name}
+                        </button>
+                    ))}
+                </div>
+             </div>
+          )}
+
+          <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-auto">
+            <span className="text-lg font-bold text-brand-accent">{currentPrice}</span>
+            <button
+              onClick={handleAddToCart}
+              className={`${isAdded ? 'bg-green-600 hover:bg-green-700' : 'bg-brand-dark hover:bg-brand-primary'} text-white px-4 py-2 rounded-md transition-colors text-sm font-semibold`}
             >
-              Buy Now
-            </a>
+              {isAdded ? 'Added!' : 'Add to Cart'}
+            </button>
           </div>
         </div>
       </div>

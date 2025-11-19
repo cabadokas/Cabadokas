@@ -1,5 +1,13 @@
+
 // Fix: Add import for React types to resolve 'Cannot find namespace React' error.
 import type { Dispatch, SetStateAction } from 'react';
+
+export interface ProductVariation {
+  id: string;
+  name: string;
+  price: string;
+  affiliateLink?: string;
+}
 
 export interface Product {
   id: string;
@@ -10,6 +18,13 @@ export interface Product {
   images: string[];
   affiliateLink: string;
   videoUrl?: string;
+  variations?: ProductVariation[];
+}
+
+export interface CartItem {
+  product: Product;
+  selectedVariationId?: string;
+  quantity: number;
 }
 
 export interface Category {
@@ -102,4 +117,6 @@ export interface AppContextType {
   socialLinks: SocialLink[];
   // Fix: Use imported Dispatch and SetStateAction types.
   setSocialLinks: Dispatch<SetStateAction<SocialLink[]>>;
+  cart: CartItem[];
+  addToCart: (product: Product, variationId?: string) => void;
 }

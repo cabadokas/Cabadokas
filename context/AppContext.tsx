@@ -1,11 +1,38 @@
+
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import type { AppContextType, Product, Post, SiteContent, SiteSettings, SocialLink, Category } from '../types';
+import type { AppContextType, Product, Post, SiteContent, SiteSettings, SocialLink, Category, CartItem } from '../types';
 import { fetchPosts } from '../services/bloggerService';
 
 // Initial Data
 const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: 'Organic Face Serum', description: 'A rejuvenating serum made with all-natural ingredients.', price: '$49.99', category: 'Skincare', images: ['https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg?auto=compress&cs=tinysrgb&w=600', 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#', videoUrl: 'https://www.youtube.com/embed/fD3-v3a0dDU' },
-  { id: '2', name: 'Silk Sleep Mask', description: 'Block out light for a deeper, more restful sleep.', price: '$24.99', category: 'Wellness', images: ['https://images.pexels.com/photos/7936413/pexels-photo-7936413.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
+  { 
+    id: '1', 
+    name: 'Organic Face Serum', 
+    description: 'A rejuvenating serum made with all-natural ingredients.', 
+    price: '$49.99', 
+    category: 'Skincare', 
+    images: ['https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg?auto=compress&cs=tinysrgb&w=600', 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=600'], 
+    affiliateLink: '#', 
+    videoUrl: 'https://www.youtube.com/embed/fD3-v3a0dDU',
+    variations: [
+      { id: 'v1-30ml', name: '30ml', price: '$49.99' },
+      { id: 'v1-50ml', name: '50ml', price: '$69.99' }
+    ]
+  },
+  { 
+    id: '2', 
+    name: 'Silk Sleep Mask', 
+    description: 'Block out light for a deeper, more restful sleep.', 
+    price: '$24.99', 
+    category: 'Wellness', 
+    images: ['https://images.pexels.com/photos/7936413/pexels-photo-7936413.jpeg?auto=compress&cs=tinysrgb&w=600'], 
+    affiliateLink: '#',
+    variations: [
+      { id: 'v2-pink', name: 'Pink', price: '$24.99' },
+      { id: 'v2-black', name: 'Black', price: '$24.99' },
+      { id: 'v2-champagne', name: 'Champagne', price: '$29.99' }
+    ]
+  },
   { id: '3', name: 'Herbal Detox Tea', description: 'A blend of herbs to cleanse and revitalize your body.', price: '$19.99', category: 'Health', images: ['https://images.pexels.com/photos/4113943/pexels-photo-4113943.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
   { id: '4', name: 'Aromatherapy Diffuser', description: 'Create a calming atmosphere with your favorite essential oils.', price: '$39.99', category: 'Home', images: ['https://images.pexels.com/photos/4203063/pexels-photo-4203063.jpeg?auto=compress&cs=tinysrgb&w=600', 'https://images.pexels.com/photos/4476644/pexels-photo-4476644.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
   { id: '5', name: 'Vitamin C Boost', description: 'High-potency Vitamin C for immune support.', price: '$29.99', category: 'Supplements', images: ['https://images.pexels.com/photos/209459/pexels-photo-209459.jpeg?auto=compress&cs=tinysrgb&w=600'], affiliateLink: '#' },
@@ -70,6 +97,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [siteContent, setSiteContent] = useState(INITIAL_SITE_CONTENT);
   const [siteSettings, setSiteSettings] = useState(INITIAL_SITE_SETTINGS);
   const [socialLinks, setSocialLinks] = useState(INITIAL_SOCIAL_LINKS);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -86,6 +114,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     loadPosts();
   }, []);
 
+  const addToCart = (product: Product, variationId?: string) => {
+    setCart(prevCart => {
+      const existingItemIndex = prevCart.findIndex(item => 
+        item.product.id === product.id && item.selectedVariationId === variationId
+      );
+
+      if (existingItemIndex >= 0) {
+        const newCart = [...prevCart];
+        newCart[existingItemIndex].quantity += 1;
+        return newCart;
+      } else {
+        return [...prevCart, { product, selectedVariationId: variationId, quantity: 1 }];
+      }
+    });
+  };
 
   const value: AppContextType = {
     products, setProducts,
@@ -95,6 +138,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     siteContent, setSiteContent,
     siteSettings, setSiteSettings,
     socialLinks, setSocialLinks,
+    cart, addToCart,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
