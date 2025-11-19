@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
           </div>
           <div>
             <h4 className="font-semibold text-lg mb-4">Follow Us</h4>
-            <div className="flex justify-center md:justify-start space-x-4">
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
               {socialLinks.map(social => (
                 <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-brand-primary transition-colors">
                   {SOCIAL_ICON_MAP[social.name]}
